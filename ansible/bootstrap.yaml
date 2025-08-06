@@ -1,0 +1,53 @@
+---
+# This playbook bootstrap a fresh AlmaLinux 10 system.
+#
+# Usage:
+#   ansible-playbook -i inventory bootstrap.yaml
+#
+# Iván Chavero <ivan@nortk.com>
+#
+
+- name: Configure AlmaLinux 10 Systems
+  hosts: almalinux
+  user: root
+  become: yes
+  vars:
+    tpm_repo_url: "https://github.com/tmux-plugins/tpm"
+    tpm_install_path: "{{ ansible_user_dir }}/.tmux/plugins/tpm"
+  tasks:
+    - name: Install required packages
+      ansible.builtin.dnf:
+        name:
+            - tmux
+            - git
+        state: present
+
+    - name: Copy nortk_env.sh to /etc/profile.d/
+      ansible.builtin.copy:
+        src: files/nortk_env.sh   # Path to the file on the Ansible control node
+        dest: /etc/profile.d/nortk_env.sh # Destination on the target server
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Ensure .tmux plugins directory exists for the connecting user
+      ansible.builtin.file:
+        path: "{{ ansible_user_dir }}/.tmux/plugins"
+        state: directory
+        mode: '0755'
+
+    - name: Install tpm (Tmux Plugin Manager)
+      ansible.builtin.git:
+        repo: "{{ tpm_repo_url }}"
+        dest: "{{ tpm_install_path }}"
+        clone: yes
+        update: yes
+
+    - name: Copy tmux.conf
+      ansible.builtin.copy:
+        src: files/tmux.conf
+        dest: "{{ ansible_user_dir }}/.tmux.conf"
+        owner: root
+        group: root
+        mode: '0755'
+
