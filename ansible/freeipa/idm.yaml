@@ -1,0 +1,68 @@
+---
+# idm.yaml
+#
+# This playbook installs and configures a FreeIPA server on Red Hat family systems.
+# It performs the following actions:
+#   1. Installs the required FreeIPA server and client packages.
+#   2. Runs the 'ipa-server-install' command to set up the FreeIPA domain.
+#
+# !! SECURITY WARNING !!
+# This playbook contains placeholder passwords in plaintext.
+# For production use, you MUST encrypt this file using Ansible Vault.
+# Command: ansible-vault encrypt playbook-freeipa.yml
+#
+# Usage (without vault):
+#   ansible-playbook -i inventory.ini playbook-freeipa.yml
+#
+# Usage (with vault):
+#   ansible-playbook -i inventory.ini playbook-freeipa.yml --ask-vault-pass
+
+- name: Install and Configure FreeIPA Server
+  hosts: ipa_servers
+  become: yes
+  user: root
+  vars_files:
+    vars/main.yaml
+
+  tasks:
+    - name: Install FreeIPA server and client packages
+      ansible.builtin.dnf:
+        name:
+          - freeipa-server
+          - freeipa-server-dns
+          - freeipa-client
+        state: present
+
+    - name: Print configuration message
+      ansible.builtin.debug:
+        msg: "Starting FreeIPA server configuration. This may take several minutes."
+
+    - name: Configure FreeIPA server
+      ansible.builtin.command:
+        cmd: >
+          ipa-server-install
+          --realm {{ kerberos_realm }}
+          --hostname {{ hostname }}
+          --domain {{ dns_domain }}
+          --ds-password {{ directory_password }}
+          --admin-password {{ admin_password }}
+          --setup-dns
+          --forwarder {{ dns_forwarder }}
+          --no-reverse
+          --unattended
+        creates: /etc/ipa/default.conf
+      # This task runs the main installation command.
+      # 'creates: /etc/ipa/default.conf' makes this task idempotent. If the
+      # configuration file already exists, Ansible will skip this task,
+      # preventing it from trying to re-install on an already configured server.
+      # The '--unattended' flag is crucial for running this non-interactively.
+      register: ipa_install_result
+      changed_when: "'Configuration complete' in ipa_install_result.stdout"
+      failed_when: "'ipa-server-install' in ipa_install_result.stderr and 'is already configured' not in ipa_install_result.stderr"
+
+    - name: Display FreeIPA configuration results
+      ansible.builtin.debug:
+        var: ipa_install_result.stdout_lines
+      when: ipa_install_result.changed
+      # Shows the output from the installation command only when it has run.
+
