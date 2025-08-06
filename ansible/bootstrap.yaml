@@ -15,9 +15,20 @@
     tpm_repo_url: "https://github.com/tmux-plugins/tpm"
     tpm_install_path: "{{ ansible_user_dir }}/.tmux/plugins/tpm"
   tasks:
+
+    - name: Ensure the crb repository is enabled
+      community.general.dnf_config_manager:
+        name: crb
+        state: enabled
+
+    - name: Install EPEL
+      ansible.builtin.dnf:
+        name: epel-release
+
     - name: Install required packages
       ansible.builtin.dnf:
         name:
+            - fail2ban
             - tmux
             - git
         state: present
@@ -51,3 +62,16 @@
         group: root
         mode: '0755'
 
+    - name: Copy Fail2Ban local configuration
+      ansible.builtin.copy:
+        src: files/jail.local
+        dest: /etc/fail2ban/jail.local
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Ensure Fail2Ban service is enabled and running
+      ansible.builtin.service:
+        name: fail2ban
+        enabled: yes
+        state: restarted
