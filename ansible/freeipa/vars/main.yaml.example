@@ -1,0 +1,20 @@
+---
+# vars/main.yaml
+#
+# Variables for the FreeIPA server installation.
+#
+# !! SECURITY WARNING !!
+# This file contains sensitive information in plaintext.
+# For production use, you MUST encrypt this file using Ansible Vault.
+# Command: ansible-vault encrypt vars/main.yml
+
+hostname: "idm.nortk.com"
+# --- PLEASE CHANGE THESE VALUES ---
+kerberos_realm: "YOUR.REALM.COM"
+dns_domain: "your.realm.com"
+dns_forwarder: "8.8.8.8" # Example: Google's public DNS
+
+# !! IMPORTANT: Replace with strong, unique passwords !!
+directory_password: "YourDirectoryManagerPassword"
+admin_password: "YourAdminUserPassword"
+
