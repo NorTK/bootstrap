@@ -31,6 +31,7 @@
             - fail2ban
             - tmux
             - git
+            - podman
         state: present
 
     - name: Copy nortk_env.sh to /etc/profile.d/
