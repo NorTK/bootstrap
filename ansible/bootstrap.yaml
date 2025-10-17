@@ -76,3 +76,11 @@
         name: fail2ban
         enabled: yes
         state: restarted
+
+    # Disable TCP Timestamps
+    - ansible.posix.sysctl:
+      name: net.ipv4.tcp_timestamps
+      value: '0'
+      sysctl_set: true
+      reload: true
+
