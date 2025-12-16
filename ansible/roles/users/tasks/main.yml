@@ -35,9 +35,10 @@
 - name: Set infinite history
   ansible.builtin.copy:
     content: |
-      export HISTSIZE=-1
-      export HISTFILESIZE=-1
       export HISTCONTROL=ignoredups
+      export HISTFILESIZE=-1
+      export HISTSIZE=-1
+      export HISTTIMEFORMAT="%F %T "
     dest: /etc/profile.d/history.sh
     owner: root
     group: root
