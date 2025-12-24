@@ -10,10 +10,20 @@
 - name: Configure AlmaLinux 10 Systems
   hosts: almalinux
   user: root
-  become: yes
+  become: true
   vars:
     tpm_repo_url: "https://github.com/tmux-plugins/tpm"
     tpm_install_path: "{{ ansible_user_dir }}/.tmux/plugins/tpm"
+    users:
+      - douglax
+      - imcsk8
+      - renich
+    user_groups:
+      - users
+    user_config_files:
+      - .vimrc
+  roles:
+    - users
   tasks:
 
     - name: Ensure the crb repository is enabled
@@ -28,16 +38,16 @@
     - name: Install required packages
       ansible.builtin.dnf:
         name:
-            - fail2ban
-            - tmux
-            - git
-            - podman
+          - fail2ban
+          - tmux
+          - git
+          - podman
         state: present
 
     - name: Copy nortk_env.sh to /etc/profile.d/
       ansible.builtin.copy:
         src: files/nortk_env.sh   # Path to the file on the Ansible control node
-        dest: /etc/profile.d/nortk_env.sh # Destination on the target server
+        dest: /etc/profile.d/nortk_env.sh   # Destination on the target server
         owner: root
         group: root
         mode: '0755'
@@ -52,8 +62,8 @@
       ansible.builtin.git:
         repo: "{{ tpm_repo_url }}"
         dest: "{{ tpm_install_path }}"
-        clone: yes
-        update: yes
+        clone: true
+        update: true
 
     - name: Copy tmux.conf
       ansible.builtin.copy:
@@ -74,7 +84,7 @@
     - name: Ensure Fail2Ban service is enabled and running
       ansible.builtin.service:
         name: fail2ban
-        enabled: yes
+        enabled: true
         state: restarted
 
     # Disable TCP Timestamps
