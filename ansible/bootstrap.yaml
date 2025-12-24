@@ -79,8 +79,15 @@
 
     # Disable TCP Timestamps
     - ansible.posix.sysctl:
-      name: net.ipv4.tcp_timestamps
-      value: '0'
-      sysctl_set: true
-      reload: true
+        name: net.ipv4.tcp_timestamps
+        value: '0'
+        sysctl_set: true
+        reload: true
+
+    - name: Ensure FirewallD is active
+      ansible.builtin.service:
+        name: firewalld
+        enabled: yes
+        state: restarted
+
 
