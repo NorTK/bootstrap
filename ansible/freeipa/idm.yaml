@@ -76,15 +76,15 @@
         backup: true
       when: certificate_file is defined
 
-    - name: Copy SSL certificate key to IdM HTTP server
-      ansible.builtin.copy:
-        src: "files/{{ certificate_key_file }}"
-        dest: /var/lib/ipa/private/httpd.key
-        owner: root
-        group: root
-        mode: '0755'
-        backup: true
-      when: certificate_key_file is defined
+#    - name: Copy SSL certificate key to IdM HTTP server
+#      ansible.builtin.copy:
+#        src: "files/{{ certificate_key_file }}"
+#        dest: /var/lib/ipa/private/httpd.key
+#        owner: root
+#        group: root
+#        mode: '0755'
+#        backup: true
+#      when: certificate_key_file is defined
 
     - name: Restart FreeIPA HTTP server
       ansible.builtin.service:
