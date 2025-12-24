@@ -18,3 +18,6 @@ dns_forwarder: "8.8.8.8" # Example: Google's public DNS
 directory_password: "YourDirectoryManagerPassword"
 admin_password: "YourAdminUserPassword"
 
+# Certificate stuff
+#certificate_file:
+#certificate_key_file:
