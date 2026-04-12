@@ -1,0 +1,80 @@
+---
+# tasks file for roles/common
+
+- name: Ensure the crb repository is enabled
+  community.general.dnf_config_manager:
+    name: crb
+    state: enabled
+
+- name: Install EPEL
+  ansible.builtin.dnf:
+    name: epel-release
+
+- name: Install required packages
+  ansible.builtin.dnf:
+    name:
+      - fail2ban
+      - git
+      - podman
+      - powerline
+      - tmux
+      - vim-enhanced
+    state: present
+
+- name: Copy nortk_env.sh to /etc/profile.d/
+  ansible.builtin.copy:
+    src: nortk_env.sh
+    dest: /etc/profile.d/nortk_env.sh
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Ensure .tmux plugins directory exists for the connecting user
+  ansible.builtin.file:
+    path: "{{ ansible_user_dir }}/.tmux/plugins"
+    state: directory
+    mode: '0755'
+
+- name: Install tpm (Tmux Plugin Manager)
+  ansible.builtin.git:
+    repo: "{{ tpm_repo_url }}"
+    dest: "{{ tpm_install_path }}"
+    clone: true
+    update: true
+
+- name: Copy configuration files to /etc/skel/
+  ansible.builtin.copy:
+    src: '{{ item.src }}'
+    dest: '/etc/skel/.{{ item.dest }}'
+    owner: root
+    group: root
+    mode: '0644'
+  loop:
+    - { src: 'tmux.conf', dest: 'tmux.conf' }
+    - { src: 'vimrc', dest: 'vimrc' }
+
+- name: Copy configuration files to root home
+  ansible.builtin.copy:
+    src: '{{ item.src }}'
+    dest: '{{ ansible_user_dir }}/.{{ item.dest }}'
+    owner: root
+    group: root
+    mode: '0755'
+  loop:
+    - { src: 'tmux.conf', dest: 'tmux.conf' }
+    - { src: 'vimrc', dest: 'vimrc' }
+
+- name: Copy Fail2Ban local configuration
+  ansible.builtin.copy:
+    src: jail.local
+    dest: /etc/fail2ban/jail.local
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart Fail2Ban
+
+- name: Ensure Fail2Ban service is enabled and running
+  ansible.builtin.service:
+    name: fail2ban
+    enabled: true
+    state: started

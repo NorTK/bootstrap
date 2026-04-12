@@ -1,0 +1,59 @@
+---
+# tasks file for roles/freeipa
+
+- name: Install FreeIPA server and client packages
+  ansible.builtin.dnf:
+    name:
+      - freeipa-server
+      - freeipa-server-dns
+      - freeipa-client
+    state: present
+
+- name: Print configuration message
+  ansible.builtin.debug:
+    msg: "Starting FreeIPA server configuration. This may take several minutes."
+
+- name: Configure FreeIPA server
+  ansible.builtin.command:
+    cmd: >
+      ipa-server-install
+      --realm {{ kerberos_realm }}
+      --hostname {{ hostname }}
+      --domain {{ dns_domain }}
+      --ds-password {{ directory_password }}
+      --admin-password {{ admin_password }}
+      --setup-dns
+      --forwarder {{ dns_forwarder }}
+      --no-reverse
+      --unattended
+    creates: /etc/ipa/default.conf
+  register: ipa_install_result
+  changed_when: "'Configuration complete' in ipa_install_result.stdout"
+  failed_when: "'ipa-server-install' in ipa_install_result.stderr and 'is already configured' not in ipa_install_result.stderr"
+
+- name: Display FreeIPA configuration results
+  ansible.builtin.debug:
+    var: ipa_install_result.stdout_lines
+  when: ipa_install_result.changed
+
+- name: Copy SSL certificate to IdM HTTP server
+  ansible.builtin.copy:
+    src: "files/{{ certificate_file }}"
+    dest: /var/lib/ipa/certs/httpd.crt
+    owner: root
+    group: root
+    mode: '0755'
+    backup: true
+  when: certificate_file is defined and certificate_file != ""
+  notify: Restart FreeIPA HTTP server
+
+- name: Copy SSL certificate key to IdM HTTP server
+  ansible.builtin.copy:
+    src: "files/{{ certificate_key_file }}"
+    dest: /var/lib/ipa/private/httpd.key
+    owner: root
+    group: root
+    mode: '0755'
+    backup: true
+  when: certificate_key_file is defined and certificate_key_file != ""
+  notify: Restart FreeIPA HTTP server

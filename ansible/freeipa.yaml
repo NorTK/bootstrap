@@ -1,0 +1,16 @@
+---
+# Playbook to install and configure FreeIPA server.
+#
+# Usage:
+#   ansible-playbook freeipa.yaml
+#
+# !! SECURITY WARNING !!
+# This playbook uses default passwords. For production, please override
+# them in vault-encrypted host_vars or group_vars.
+
+- name: Install and Configure FreeIPA Server
+  hosts: idm.nortk.com
+  become: yes
+  user: root
+  roles:
+    - freeipa
