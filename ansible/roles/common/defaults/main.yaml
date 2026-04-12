@@ -1,0 +1,4 @@
+---
+# defaults file for roles/common
+tpm_repo_url: "https://github.com/tmux-plugins/tpm"
+tpm_install_path: "{{ ansible_user_dir }}/.tmux/plugins/tpm"
