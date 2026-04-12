@@ -1,0 +1,15 @@
+---
+# defaults file for roles/freeipa
+
+hostname: "{{ ansible_fqdn | default(inventory_hostname) }}"
+kerberos_realm: "NORTK.COM"
+dns_domain: "nortk.com"
+dns_forwarder: "8.8.8.8"
+
+# Security: These should be overridden in vault-encrypted host_vars or group_vars
+directory_password: "ChangeMeNow!"
+admin_password: "ChangeMeNow!"
+
+# Optional certificate files
+# certificate_file: ""
+# certificate_key_file: ""

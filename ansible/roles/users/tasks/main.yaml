@@ -1,0 +1,46 @@
+---
+- name: Create groups
+  ansible.builtin.group:
+    name: '{{ item }}'
+    state: present
+  loop: '{{ user_groups }}'
+
+- name: Create users
+  ansible.builtin.user:
+    name: '{{ item }}'
+    groups:
+      - adm
+      - users
+      - wheel
+    append: true
+    password: "{{ users_default_password }}"
+    update_password: on_create
+    state: present
+  loop: '{{ users }}'
+  register: user_creation
+
+- name: Force password change on first login
+  ansible.builtin.command:
+    cmd: "chage -d 0 {{ item.item }}"
+  loop: '{{ user_creation.results }}'
+  when: item.changed
+  changed_when: true
+
+- name: Set authorized keys
+  ansible.posix.authorized_key:
+    user: '{{ item }}'
+    key: "{{ lookup('file', 'ssh/{{ item }}.pub') }}"
+    state: present
+  loop: '{{ users }}'
+
+- name: Set infinite history
+  ansible.builtin.copy:
+    content: |
+      export HISTCONTROL=ignoredups
+      export HISTFILESIZE=-1
+      export HISTSIZE=-1
+      export HISTTIMEFORMAT="%F %T "
+    dest: /etc/profile.d/history.sh
+    owner: root
+    group: root
+    mode: '0644'

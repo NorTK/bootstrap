@@ -1,0 +1,7 @@
+---
+# handlers file for roles/common
+
+- name: Restart Fail2Ban
+  ansible.builtin.service:
+    name: fail2ban
+    state: restarted

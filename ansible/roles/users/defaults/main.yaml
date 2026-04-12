@@ -1,0 +1,11 @@
+---
+# defaults file for roles/users
+users_default_password: "$6$jL1KECynjAmhqlkH$vJjUFHyU4KX51VLFgjVx3zKjXbDtBl405CaLf8VkUmlP.8ftgqjTihJ5bPgf4TVoNVlrsjHTdzlsp9XlSVCMN0" # ¡Cambiame ya!
+
+users:
+  - douglax
+  - imcsk8
+  - renich
+
+user_groups:
+  - users

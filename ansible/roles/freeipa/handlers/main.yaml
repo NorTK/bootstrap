@@ -1,0 +1,7 @@
+---
+# handlers file for roles/freeipa
+
+- name: Restart FreeIPA HTTP server
+  ansible.builtin.service:
+    name: httpd
+    state: restarted
