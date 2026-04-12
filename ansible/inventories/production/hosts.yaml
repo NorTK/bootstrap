@@ -1,0 +1,6 @@
+---
+all:
+  children:
+    cs10:
+      hosts:
+        idm.nortk.com:
