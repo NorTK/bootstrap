@@ -9,7 +9,7 @@
 # them in vault-encrypted host_vars or group_vars.
 
 - name: Install and Configure FreeIPA Server
-  hosts: cs10
+  hosts: idm.nortk.com
   become: yes
   user: root
   roles:
