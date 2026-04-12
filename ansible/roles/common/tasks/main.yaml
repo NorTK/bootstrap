@@ -13,12 +13,12 @@
 - name: Install required packages
   ansible.builtin.dnf:
     name:
-      - vim-enhanced
-      - powerline
       - fail2ban
-      - tmux
       - git
       - podman
+      - powerline
+      - tmux
+      - vim-enhanced
     state: present
 
 - name: Copy nortk_env.sh to /etc/profile.d/
