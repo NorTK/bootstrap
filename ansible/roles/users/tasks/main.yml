@@ -13,8 +13,18 @@
       - users
       - wheel
     append: true
+    password: "{{ users_default_password }}"
+    update_password: on_create
     state: present
   loop: '{{ users }}'
+  register: user_creation
+
+- name: Force password change on first login
+  ansible.builtin.command:
+    cmd: "chage -d 0 {{ item.item }}"
+  loop: '{{ user_creation.results }}'
+  when: item.changed
+  changed_when: true
 
 - name: Set authorized keys
   ansible.posix.authorized_key:

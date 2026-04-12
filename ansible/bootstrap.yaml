@@ -1,14 +1,16 @@
 ---
-# This playbook bootstrap a fresh AlmaLinux 10 system.
+# This playbook bootstrap a fresh CentOS Stream 10 system.
 #
 # Usage:
-#   ansible-playbook -i inventory bootstrap.yaml
+#   ansible-playbook bootstrap.yaml
+#
+# note: the inventory is inside inventories/ and the default is declared in ansible.cfg
 #
 # Iván Chavero <ivan@nortk.com>
 #
 
-- name: Configure AlmaLinux 10 Systems
-  hosts: almalinux
+- name: Configure CentOS Stream 10 Systems
+  hosts: cs10
   user: root
   become: true
   vars:
