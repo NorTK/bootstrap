@@ -1,0 +1,27 @@
+---
+# Virtualization Host Playbook
+#
+# Usage:
+#   ansible-playbook virtu.yaml
+#
+# note: the inventory is inside inventories/ and the default is declared in ansible.cfg
+#
+# Iván Chavero <imcsk8@nortk.com>
+#
+
+- name: Configure Virtualization For CentOS Stream 10 Systems
+  hosts: cs10
+  user: root
+  become: true
+  tasks:
+
+    - name: Install required packages for virtualization host
+      ansible.builtin.dnf:
+        name: "@Virtualization Host"
+        state: latest
+
+    - name: Start and enable libvirtd service
+      ansible.builtin.systemd:
+        name: libvirtd
+        state: started
+        enabled: true
