@@ -116,4 +116,14 @@
         allowerasing: true
         state: latest
 
+    - name: Create /.autorelabel file
+      ansible.builtin.file:
+        path: /.autorelabel
+        state: touch
+        mode: '0644'
+      register: autorelabel_file
 
+    - name: Reboot the system to start relabeling
+      ansible.builtin.reboot:
+        msg: "Rebooting to trigger SELinux autorelabel"
+      when: autorelabel_file.changed
