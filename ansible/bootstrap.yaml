@@ -37,6 +37,13 @@
       ansible.builtin.dnf:
         name: epel-release
 
+    - name: Install Hyperscale Repos
+      ansible.builtin.dnf:
+        name:
+          - centos-release-hyperscale
+          - centos-release-hyperscale-experimental
+          - centos-release-hyperscale-kernel
+
     - name: Install required packages
       ansible.builtin.dnf:
         name:
@@ -44,7 +51,8 @@
           - tmux
           - git
           - podman
-        state: present
+          - kernel
+        state: latest
 
     - name: Copy nortk_env.sh to /etc/profile.d/
       ansible.builtin.copy:
@@ -101,5 +109,11 @@
         name: firewalld
         enabled: yes
         state: restarted
+
+    - name: Upgrade all packages
+      ansible.builtin.dnf:
+        name: "*"
+        allowerasing: true
+        state: latest
 
 
